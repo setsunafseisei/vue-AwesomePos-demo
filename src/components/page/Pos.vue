@@ -5,18 +5,30 @@
         <el-tabs>
           
           <el-tab-pane label="点餐">
-            <el-table :data="tableData" border style="width:100%">
-              <el-table-column label="商品名称" props="goodsName"></el-table-column>
-              <el-table-column label="数量" props="count" width=50></el-table-column>
-              <el-table-column label="价格" props="price" width=70></el-table-column>
-              <el-table-column label="操作" width=100 fixed="right">
+            <el-table :data="tableData" border style="width: 100%">
+
+              <el-table-column prop="goodsName" label="商品名称"></el-table-column>
+              <el-table-column prop="count" label="数量" width="50"></el-table-column>
+              <el-table-column prop="price" label="金额" width="70"></el-table-column>
+              <el-table-column label="操作" width="100" fixed="right">
                 <template scope="scope">
-                  <el-button type="text" size="small">删除</el-button>
-                  <el-button type="text" size="small">增加</el-button>
+                    <!-- <el-button type="text" size="small" @click="delSingleGoods(scope.row)">删除</el-button> -->
+                    <!-- <el-button type="text" size="small" @click="addOrderList(scope.row)">增加</el-button> -->
+                    <el-button type="text" size="small" >删除</el-button>
+                    <el-button type="text" size="small" >增加</el-button>
+
                 </template>
               </el-table-column>
               
             </el-table>
+
+            <div class="div-btn">
+              <el-button type="warning">挂单</el-button>
+              <el-button type="danger">删除</el-button>
+              <el-button type="success">结账</el-button>
+            </div>
+
+
           </el-tab-pane>
 
           <el-tab-pane label="挂单">
@@ -34,40 +46,48 @@
 
 <script>
 export default {
-  name: 'pos',
-  data(){
+  name: "pos",
+  data() {
     return {
-      tableData:[{
-          goodsName: '可口可乐',
+      tableData: [
+        {
+          goodsName: "可口可乐",
           price: 8,
-          count:1
-        }, {
-          goodsName: '香辣鸡腿堡',
+          count: 1
+        },
+        {
+          goodsName: "香辣鸡腿堡",
           price: 15,
-          count:1
-        }, {
-          goodsName: '爱心薯条',
+          count: 1
+        },
+        {
+          goodsName: "爱心薯条",
           price: 8,
-          count:1
-        }, {
-          goodsName: '甜筒',
+          count: 1
+        },
+        {
+          goodsName: "甜筒",
           price: 8,
-          count:1
-        }],
-    }
+          count: 1
+        }
+      ]
+    };
   },
-  mounted:function(){
+  mounted: function() {
     var orderHeight = document.body.clientHeight;
-    document.getElementById('order-list').style.height = orderHeight+'px';
-    
+    document.getElementById("order-list").style.height = orderHeight + "px";
   }
-}
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.pos-order{
+.pos-order {
   background-color: #f9fafc;
-  border-right:#c0ccda 1px solid;
+  border-right: #c0ccda 1px solid;
+}
+
+.div-btn {
+  margin-top: 10px;
 }
 </style>
