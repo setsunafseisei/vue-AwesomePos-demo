@@ -45,9 +45,9 @@
           <div class="title">常用商品</div>
           <div class="often-goods-list">
             <ul>
-              <li v-for="good in oftenGoods">
-                <span>{{  good.goodsName }}</span>
-                <span class="price">¥ {{ good.price }}元</span>
+              <li v-for="goods in oftenGoods">
+                <span>{{  goods.goodsName }}</span>
+                <span class="price">¥ {{ goods.price }}元</span>
               </li>
             </ul>
           </div>
@@ -66,9 +66,39 @@
               </ul>
               </div>
             </el-tab-pane>
-            <el-tab-pane label="小吃">小吃</el-tab-pane>
-            <el-tab-pane label="饮料">饮料</el-tab-pane>
-            <el-tab-pane label="套餐">套餐</el-tab-pane>
+            <el-tab-pane label="小吃">
+              <div>
+                <ul class='cookList'>
+                  <li v-for="good in type1Goods">
+                      <span class="foodImg"><img :src="good.goodsImg" width="100%"></span>
+                      <span class="foodName">{{good.goodsName}}</span>
+                      <span class="foodPrice">￥{{good.price}}.00元</span>
+                  </li>
+              </ul>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane label="饮料">
+              <div>
+                <ul class='cookList'>
+                  <li v-for="good in type2Goods">
+                      <span class="foodImg"><img :src="good.goodsImg" width="100%"></span>
+                      <span class="foodName">{{good.goodsName}}</span>
+                      <span class="foodPrice">￥{{good.price}}.00元</span>
+                  </li>
+              </ul>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane label="套餐">
+              <div>
+                <ul class='cookList'>
+                  <li v-for="good in type3Goods">
+                      <span class="foodImg"><img :src="good.goodsImg" width="100%"></span>
+                      <span class="foodName">{{good.goodsName}}</span>
+                      <span class="foodPrice">￥{{good.price}}.00元</span>
+                  </li>
+              </ul>
+              </div>
+            </el-tab-pane>
            </el-tabs>
         </div>
       </el-col>
@@ -78,6 +108,9 @@
 </template>
 
 <script>
+import axios from "axios";
+// import $ from "jquery"
+
 export default {
   name: "pos",
   data() {
@@ -104,103 +137,48 @@ export default {
           count: 1
         }
       ],
-      oftenGoods:[
-        {
-              goodsId:1,
-              goodsName:'香辣鸡腿堡',
-              price:18
-          }, {
-              goodsId:2,
-              goodsName:'田园鸡腿堡',
-              price:15
-          }, {
-              goodsId:3,
-              goodsName:'和风汉堡',
-              price:15
-          }, {
-              goodsId:4,
-              goodsName:'快乐全家桶',
-              price:80
-          }, {
-              goodsId:5,
-              goodsName:'脆皮炸鸡腿',
-              price:10
-          }, {
-              goodsId:6,
-              goodsName:'魔法鸡块',
-              price:20
-          }, {
-              goodsId:7,
-              goodsName:'可乐大杯',
-              price:10
-          }, {
-              goodsId:8,
-              goodsName:'雪顶咖啡',
-              price:18
-          }, {
-              goodsId:9,
-              goodsName:'大块鸡米花',
-              price:15
-          }, {
-              goodsId:20,
-              goodsName:'香脆鸡柳',
-              price:17
-          }
-      ],
-      type0Goods:[
-        {
-              goodsId:1,
-              goodsImg:"http://7xjyw1.com1.z0.glb.clouddn.com/pos001.jpg",
-              goodsName:'香辣鸡腿堡',
-              price:18
-          }, {
-              goodsId:2,
-              goodsImg:"http://7xjyw1.com1.z0.glb.clouddn.com/pos002.jpg",
-              goodsName:'田园鸡腿堡',
-              price:15
-          }, {
-              goodsId:3,
-              goodsImg:"http://7xjyw1.com1.z0.glb.clouddn.com/pos004.jpg",
-              goodsName:'和风汉堡',
-              price:15
-          }, {
-              goodsId:4,
-               goodsImg:"http://7xjyw1.com1.z0.glb.clouddn.com/pos003.jpg",
-              goodsName:'快乐全家桶',
-              price:80
-          }, {
-              goodsId:5,
-               goodsImg:"http://7xjyw1.com1.z0.glb.clouddn.com/pos003.jpg",
-              goodsName:'脆皮炸鸡腿',
-              price:10
-          }, {
-              goodsId:6,
-               goodsImg:"http://7xjyw1.com1.z0.glb.clouddn.com/pos004.jpg",
-              goodsName:'魔法鸡块',
-              price:20
-          }, {
-              goodsId:7,
-               goodsImg:"http://7xjyw1.com1.z0.glb.clouddn.com/pos001.jpg",
-              goodsName:'可乐大杯',
-              price:10
-          }, {
-              goodsId:8,
-               goodsImg:"http://7xjyw1.com1.z0.glb.clouddn.com/pos003.jpg",
-              goodsName:'雪顶咖啡',
-              price:18
-          }, {
-              goodsId:9,
-               goodsImg:"http://7xjyw1.com1.z0.glb.clouddn.com/pos002.jpg",
-              goodsName:'大块鸡米花',
-              price:15
-          }, {
-              goodsId:20,
-               goodsImg:"http://7xjyw1.com1.z0.glb.clouddn.com/pos002.jpg",
-              goodsName:'香脆鸡柳',
-              price:17
-          }
-      ],
+      oftenGoods: [],
+      type0Goods: [],
+      type1Goods: [],
+      type2Goods: [],
+      type3Goods: []
     };
+  },
+  // 钩子函数： 创建dom前获取数据（可以通过axios 或 ajax）
+  created: function() {
+    // axios 获取
+    axios
+      .get(
+        "https://www.easy-mock.com/mock/5b8b30dbf032f03c5e71de7f/kuaican/oftenGoods"
+      )
+      .then(response => {
+        // console.log(response);
+        this.oftenGoods = response.data;
+      })
+      .catch(err => {
+        // console.log(err);
+        alert("error!");
+      });
+
+    // ajax 获取
+    // $.get("https://www.easy-mock.com/mock/5b8b30dbf032f03c5e71de7f/kuaican/oftenGoods",function (response) {
+    //   console.log(response);
+    //   this.oftenGoods = response;
+    // })
+
+    axios
+      .get(
+        "https://www.easy-mock.com/mock/5b8b30dbf032f03c5e71de7f/kuaican/typeGoods"
+      )
+      .then(response => {
+        this.type0Goods = response.data[0];
+        this.type1Goods = response.data[1];
+        this.type2Goods = response.data[2];
+        this.type3Goods = response.data[3];
+      })
+      .catch(err => {
+        alert("error!");
+      });
   },
   mounted: function() {
     var orderHeight = document.body.clientHeight;
@@ -220,59 +198,59 @@ export default {
   margin-top: 10px;
 }
 
-.title{
-  height:20px;
+.title {
+  height: 20px;
   border-bottom: #d3dce6 1px solid;
   background-color: #f9fafc;
-  padding:10px;
-  text-align:left;
+  padding: 10px;
+  text-align: left;
 }
 
-.often-goods-list ul li{
-  list-style:none;
-  float:left;
-  border:1px solid #e5e9f2;
-  padding:10px;
-  margin:10px;
-  background-color:#FFFFFF;
+.often-goods-list ul li {
+  list-style: none;
+  float: left;
+  border: 1px solid #e5e9f2;
+  padding: 10px;
+  margin: 10px;
+  background-color: #ffffff;
 }
 
-.price{
-  color:#58b7ff;
+.price {
+  color: #58b7ff;
 }
 
-.goodsType{
-  clear:both;
+.goodsType {
+  clear: both;
 }
 
-.cookList li{
-  list-style:none;
-  width:23%; 
-  border:1px solid #E5E9F2;
+.cookList li {
+  list-style: none;
+  width: 23%;
+  border: 1px solid #e5e9f2;
   height: auot;
   overflow: hidden;
-  background-color:#fff;
+  background-color: #fff;
   padding: 2px;
-  float:left;
+  float: left;
   margin: 2px;
 }
 
-.cookList li span{
-    display: block;
-    float:left;
+.cookList li span {
+  display: block;
+  float: left;
 }
-.foodImg{
-    width: 40%;
-    margin-bottom:-5px;
+.foodImg {
+  width: 40%;
+  margin-bottom: -5px;
 }
-.foodName{
-    font-size: 18px;
-    padding-left: 10px;
-    color:brown;
+.foodName {
+  font-size: 18px;
+  padding-left: 10px;
+  color: brown;
 }
-.foodPrice{
-    font-size: 16px;
-    padding-left: 10px;
-    padding-top:10px;
+.foodPrice {
+  font-size: 16px;
+  padding-left: 10px;
+  padding-top: 10px;
 }
 </style>
