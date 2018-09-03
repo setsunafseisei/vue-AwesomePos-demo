@@ -12,20 +12,23 @@
               <el-table-column prop="price" label="金额" width="70"></el-table-column>
               <el-table-column label="操作" width="100" fixed="right">
                 <template scope="scope">
-                    <!-- <el-button type="text" size="small" @click="delSingleGoods(scope.row)">删除</el-button> -->
-                    <!-- <el-button type="text" size="small" @click="addOrderList(scope.row)">增加</el-button> -->
-                    <el-button type="text" size="small" >删除</el-button>
-                    <el-button type="text" size="small" >增加</el-button>
+                    <!-- scope.row  当前行数据 scope表示当前作用域 -->
+                    <el-button type="text" size="small" @click="delGood(scope.row)">删除</el-button>
+                    <el-button type="text" size="small" @click="addOrderList(scope.row)">增加</el-button>
 
                 </template>
               </el-table-column>
               
             </el-table>
 
+            <div class="totalDiv">
+              <small>数量：</small> {{totalCount}}　　　<small>金额：</small> {{totalMoney}} <small>元</small>
+            </div>
+
             <div class="div-btn">
               <el-button type="warning">挂单</el-button>
-              <el-button type="danger">删除</el-button>
-              <el-button type="success">结账</el-button>
+              <el-button type="danger" @click="delAllGoods">删除订单</el-button>
+              <el-button type="success" @click="checkOut">结账</el-button>
             </div>
 
 
@@ -45,7 +48,7 @@
           <div class="title">常用商品</div>
           <div class="often-goods-list">
             <ul>
-              <li v-for="goods in oftenGoods">
+              <li v-for="goods in oftenGoods" @click="addOrderList(goods)">
                 <span>{{  goods.goodsName }}</span>
                 <span class="price">¥ {{ goods.price }}元</span>
               </li>
@@ -58,7 +61,7 @@
             <el-tab-pane label="汉堡">
               <div>
                 <ul class='cookList'>
-                  <li v-for="good in type0Goods">
+                  <li v-for="good in type0Goods" @click="addOrderList(good)">
                       <span class="foodImg"><img :src="good.goodsImg" width="100%"></span>
                       <span class="foodName">{{good.goodsName}}</span>
                       <span class="foodPrice">￥{{good.price}}.00元</span>
@@ -69,7 +72,7 @@
             <el-tab-pane label="小吃">
               <div>
                 <ul class='cookList'>
-                  <li v-for="good in type1Goods">
+                  <li v-for="good in type1Goods" @click="addOrderList(good)">
                       <span class="foodImg"><img :src="good.goodsImg" width="100%"></span>
                       <span class="foodName">{{good.goodsName}}</span>
                       <span class="foodPrice">￥{{good.price}}.00元</span>
@@ -80,7 +83,7 @@
             <el-tab-pane label="饮料">
               <div>
                 <ul class='cookList'>
-                  <li v-for="good in type2Goods">
+                  <li v-for="good in type2Goods" @click="addOrderList(good)">
                       <span class="foodImg"><img :src="good.goodsImg" width="100%"></span>
                       <span class="foodName">{{good.goodsName}}</span>
                       <span class="foodPrice">￥{{good.price}}.00元</span>
@@ -91,7 +94,7 @@
             <el-tab-pane label="套餐">
               <div>
                 <ul class='cookList'>
-                  <li v-for="good in type3Goods">
+                  <li v-for="good in type3Goods" @click="addOrderList(good)">
                       <span class="foodImg"><img :src="good.goodsImg" width="100%"></span>
                       <span class="foodName">{{good.goodsName}}</span>
                       <span class="foodPrice">￥{{good.price}}.00元</span>
@@ -115,37 +118,39 @@ export default {
   name: "pos",
   data() {
     return {
-      tableData: [
-        {
-          goodsName: "可口可乐",
-          price: 8,
-          count: 1
-        },
-        {
-          goodsName: "香辣鸡腿堡",
-          price: 15,
-          count: 1
-        },
-        {
-          goodsName: "爱心薯条",
-          price: 8,
-          count: 1
-        },
-        {
-          goodsName: "甜筒",
-          price: 8,
-          count: 1
-        }
-      ],
+      tableData: [],
       oftenGoods: [],
       type0Goods: [],
       type1Goods: [],
       type2Goods: [],
-      type3Goods: []
+      type3Goods: [],
+      totalMoney: 0,
+      totalCount: 0
     };
   },
   // 钩子函数： 创建dom前获取数据（可以通过axios 或 ajax）
   created: function() {
+    /*
+    // fetch 获取(fetch 学习地址 ：https://segmentfault.com/a/1190000011433064)
+    fetch("https://www.easy-mock.com/mock/5b8b30dbf032f03c5e71de7f/kuaican/oftenGoods", { // 在URL中写上传递的参数
+      method: 'GET'
+    })
+    .then((res)=>{
+      return res.json()
+    })
+    .then((res)=>{
+      console.log(res)
+      this.oftenGoods = res;
+    })*/
+
+    /*
+    // ajax 获取
+    $.get("https://www.easy-mock.com/mock/5b8b30dbf032f03c5e71de7f/kuaican/oftenGoods",function (response) {
+      console.log(response);
+      this.oftenGoods = response;
+    })
+    */
+
     // axios 获取
     axios
       .get(
@@ -159,12 +164,6 @@ export default {
         // console.log(err);
         alert("error!");
       });
-
-    // ajax 获取
-    // $.get("https://www.easy-mock.com/mock/5b8b30dbf032f03c5e71de7f/kuaican/oftenGoods",function (response) {
-    //   console.log(response);
-    //   this.oftenGoods = response;
-    // })
 
     axios
       .get(
@@ -183,6 +182,103 @@ export default {
   mounted: function() {
     var orderHeight = document.body.clientHeight;
     document.getElementById("order-list").style.height = orderHeight + "px";
+  },
+  // 绑定方法 实现用数据驱动dom
+  methods: {
+
+    // 增加 商品 到 结算列表
+    addOrderList(good) {
+      this.totalMoney = 0;
+      this.totalCount = 0;
+
+      // 商品是否 已经 存在于订单列表中
+      let isHave = false; // 默认不存在
+      for (let i = 0; i < this.tableData.length; i++) {
+        if (this.tableData[i].goodsId == good.goodsId) {
+          isHave = true;
+        }
+      }
+
+      // 若已经有该产品 则不新增 而是修改数量
+      if (isHave == true) {
+        // 已有 增加数量
+        let arr = this.tableData.filter(o => o.goodsId == good.goodsId); // filter() 按内部方法条件过滤数据（留下满足内部方法的） 返回为一个数组
+        arr[0].count++;
+      } else {
+        // 没有 新增一条
+        let newGood = {
+          goodsId: good.goodsId,
+          goodsName: good.goodsName,
+          price: good.price,
+          count: 1
+        };
+
+        this.tableData.push(newGood);
+      }
+
+      this.getAllMonAndCount();
+
+    },
+
+    // 删除单个商品
+    // delGood(good) {
+    //   this.tableData = this.tableData.filter(o => o.goodsId != good.goodsId);
+    //   this.getAllMonAndCount();
+    // },
+    delGood(good) {
+
+      if (good.count>1) {
+        good.count --;
+      } else {
+        this.tableData = this.tableData.filter(o => o.goodsId != good.goodsId);
+      }
+      
+      this.getAllMonAndCount();
+    },
+
+    // 删除全部商品
+    delAllGoods(){
+      this.tableData = [];
+      this.totalMoney = 0;
+      this.totalCount = 0;
+    },
+
+    // 总金额和总数量计算
+    getAllMonAndCount() {
+      this.totalMoney = 0;
+      this.totalCount = 0;
+      if (this.tableData) {
+        this.tableData.forEach(element => {
+          // console.log(element);
+          this.totalMoney += element.price * element.count;
+          this.totalCount += element.count;
+        });
+      }
+    },
+
+    // 模拟结账
+    checkOut(){
+      if (this.totalCount != 0) {
+        
+        this.delAllGoods()// 清空所有数据
+
+        // this.$message({
+        //   message:"结账成功！",
+        //   type:'success',
+        //   duration:800,
+        //   showClose: true,
+        // });
+      } else {
+        // this.$message.error("当前未选中商品") // 不可设置时间
+        this.$message({
+          message:"当前未选中商品",
+          type:'warning',
+          duration:800,
+          showClose: true,
+        });
+      }
+    },
+    
   }
 };
 </script>
@@ -213,6 +309,7 @@ export default {
   padding: 10px;
   margin: 10px;
   background-color: #ffffff;
+  cursor: pointer;
 }
 
 .price {
@@ -233,6 +330,7 @@ export default {
   padding: 2px;
   float: left;
   margin: 2px;
+  cursor: pointer;
 }
 
 .cookList li span {
@@ -244,7 +342,7 @@ export default {
   margin-bottom: -5px;
 }
 .foodName {
-  font-size: 18px;
+  font-size: 16px;
   padding-left: 10px;
   color: brown;
 }
@@ -252,5 +350,11 @@ export default {
   font-size: 16px;
   padding-left: 10px;
   padding-top: 10px;
+}
+
+.totalDiv {
+  background-color: #fff;
+  padding: 10px;
+  border-bottom: 1px solid #d3dce6;
 }
 </style>

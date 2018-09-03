@@ -38,12 +38,13 @@ module.exports = {
 
   build: {
     // Template for index.html
-    index: path.resolve(__dirname, '../dist/index.html'),
+    index: path.resolve(__dirname, '../dist/index.html'), // 打包的路径  可以是相对也可以是绝对
 
     // Paths
-    assetsRoot: path.resolve(__dirname, '../dist'),
+    assetsRoot: path.resolve(__dirname, '../dist'),  // 生成名称
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    // assetsPublicPath: '/',   // 公用路径 如果要打包一定要改动这个为 相对路径
+    assetsPublicPath: './',   // 公用路径 如果要打包一定要改动这个为 相对路径
 
     /**
      * Source Maps
